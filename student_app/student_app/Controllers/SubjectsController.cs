@@ -82,6 +82,50 @@ namespace student_app.Controllers
             return NoContent();
         }
 
+        // PUT: api/Subjects/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("EnrollStudent")]
+        public async Task<IActionResult> EnrollStudent(EnrollStudent entollPayload)
+        {
+            var subject = new Subject();
+            var student = new Student();
+
+            // check Subject Exist
+            if (entollPayload?.SubjectId != null && entollPayload?.StudentId != null)
+            {
+                subject = await _context.Subjects.FindAsync(entollPayload.SubjectId);
+                student = await _context.Students.FindAsync(entollPayload.StudentId);
+
+                if (subject == null || student == null)
+                {
+                    return BadRequest();
+                }
+                else {
+                    var subjectStudent = student;
+                    if (subject.Students != null)
+                    {
+                        subjectStudent = subject?.Students.Where(std => std.StudentId == entollPayload.StudentId).FirstOrDefault();
+                    }
+                    else {
+                        subject.Students = new List<Student>();
+                    }
+
+                    subject.Students.Add(subjectStudent);
+
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Accepted();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest();
+            }
+        }
+
         // POST: api/Subjects
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
