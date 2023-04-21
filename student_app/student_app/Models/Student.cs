@@ -11,6 +11,8 @@ namespace student_app.Models
         [Required]
         [Column(TypeName = "nvarchar(250)")]
         public string StudentName { get; set; } = "";
+
+        [Required]
         public string? StudentEmail { get; set; }
         public virtual ICollection<Subject>? Subjects { get; set; }
     }

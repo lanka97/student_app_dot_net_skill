@@ -3,7 +3,8 @@
     public interface IRepositoryManager
     {
         // IDepartmentRepository Department { get; }
-        IStudentRepository Student { get; }
-        void Save();
+        IStudentRepository Student { get; } 
+        ISubjectRepository Subject { get; }
+        Task<int> Save();
     }
 }

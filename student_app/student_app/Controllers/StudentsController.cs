@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using student_app.Models;
+using student_app.Repository.RepositoryManager;
 
 namespace student_app.Controllers
 {
@@ -13,35 +14,30 @@ namespace student_app.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        private readonly APPDBContext _context;
+        private readonly IRepositoryManager _repository;
 
-        public StudentsController(APPDBContext context)
+        public StudentsController( IRepositoryManager repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: api/Students
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
+        public IActionResult GetStudents()
         {
-          if (_context.Students == null)
-          {
-              return NotFound();
-          }
-            return await _context.Students.ToListAsync();
+            var students = _repository.Student.GetAllStudents(trackChanges: false);
+            return Ok(students);
         }
 
         // GET: api/Students/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Student>> GetStudent(int id)
         {
-          if (_context.Students == null)
+          if (_repository.Student == null)
           {
               return NotFound();
           }
-            var student = await _context.Students.Where(std => std.StudentId == id)
-                          .Include(std => std.Subjects)
-                          .FirstOrDefaultAsync();
+            var student = _repository.Student.GetStudent(id, true);
 
             if (student == null)
             {
@@ -53,34 +49,34 @@ namespace student_app.Controllers
 
         // PUT: api/Students/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutStudent(int id, Student student)
-        {
-            if (id != student.StudentId)
-            {
-                return BadRequest();
-            }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutStudent(int id, Student student)
+        //{
+        //    if (id != student.StudentId)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            _context.Entry(student).State = EntityState.Modified;
+        //    _context.Entry(student).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StudentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!StudentExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
 
         // POST: api/Students
@@ -88,39 +84,39 @@ namespace student_app.Controllers
         [HttpPost]
         public async Task<ActionResult<Student>> PostStudent(Student student)
         {
-          if (_context.Students == null)
+          if (_repository.Student == null)
           {
               return Problem("Entity set 'APPDBContext.Students'  is null.");
           }
-            _context.Students.Add(student);
-            await _context.SaveChangesAsync();
+            _repository.Student.CreateStudent(student);
+            await _repository.Save();
 
             return CreatedAtAction("GetStudent", new { id = student.StudentId }, student);
         }
 
         // DELETE: api/Students/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStudent(int id)
-        {
-            if (_context.Students == null)
-            {
-                return NotFound();
-            }
-            var student = await _context.Students.FindAsync(id);
-            if (student == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteStudent(int id)
+        //{
+        //    if (_context.Students == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var student = await _context.Students.FindAsync(id);
+        //    if (student == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
+        //    _context.Students.Remove(student);
+        //    await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
-        private bool StudentExists(int id)
-        {
-            return (_context.Students?.Any(e => e.StudentId == id)).GetValueOrDefault();
-        }
+        //private bool StudentExists(int id)
+        //{
+        //    return (_context.Students?.Any(e => e.StudentId == id)).GetValueOrDefault();
+        //}
     }
 }

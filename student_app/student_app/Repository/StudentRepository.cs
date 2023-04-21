@@ -1,4 +1,5 @@
-﻿using student_app.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using student_app.Models;
 using student_app.Repository.RepositoryBase;
 
 namespace student_app.Repository
@@ -15,5 +16,11 @@ namespace student_app.Repository
             .ToList();
 
         public void CreateStudent(Student student) => Create(student);
+
+        public Student GetStudent(int stdId, bool trackChanges) =>
+            FindAll(trackChanges)
+            .Where(std => std.StudentId == stdId)
+            .Include(std => std.Subjects)
+            .FirstOrDefault();
     }
 }
