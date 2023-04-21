@@ -11,7 +11,7 @@ using student_app.Models;
 namespace student_app.Migrations
 {
     [DbContext(typeof(APPDBContext))]
-    [Migration("20230420095727_init")]
+    [Migration("20230421033505_init")]
     partial class init
     {
         /// <inheritdoc />

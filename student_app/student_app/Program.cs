@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using student_app.Models;
+using student_app.Repository.RepositoryManager;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<APPDBContext>(options => 
         options.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection"))
 );
+
+builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 var app = builder.Build();
 
