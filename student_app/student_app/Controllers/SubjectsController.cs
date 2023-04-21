@@ -56,30 +56,29 @@ namespace student_app.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSubject(int id, Subject subject)
         {
-            if (id != subject.SubjectId)
+
+            if (!SubjectExists(id))
             {
-                return BadRequest();
+                return NotFound();
+            }
+            else
+            {
+                var existSubject = await _context.Subjects.FindAsync(id);
+                existSubject.SubjectName = (subject.SubjectName == existSubject.SubjectName) ? existSubject.SubjectName: subject.SubjectName;
+                existSubject.Credits = (subject.Credits == existSubject.Credits) ? existSubject.Credits: subject.Credits;
             }
 
-            _context.Entry(subject).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
-            {
-                if (!SubjectExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+            {  
+                    throw; 
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // PUT: api/Subjects/5
@@ -93,7 +92,9 @@ namespace student_app.Controllers
             // check Subject Exist
             if (entollPayload?.SubjectId != null && entollPayload?.StudentId != null)
             {
-                subject = await _context.Subjects.FindAsync(entollPayload.SubjectId);
+                subject = await _context.Subjects.Where(std => std.SubjectId == entollPayload.SubjectId)
+                          .Include(std => std.Students)
+                          .FirstOrDefaultAsync();
                 student = await _context.Students.FindAsync(entollPayload.StudentId);
 
                 if (subject == null || student == null)
@@ -101,16 +102,21 @@ namespace student_app.Controllers
                     return BadRequest();
                 }
                 else {
-                    var subjectStudent = student;
+                    var studentExists = false;
                     if (subject.Students != null)
                     {
-                        subjectStudent = subject?.Students.Where(std => std.StudentId == entollPayload.StudentId).FirstOrDefault();
+                        var subjectStudent = subject?.Students.Where(std => std.StudentId == entollPayload.StudentId).FirstOrDefault();
+                        studentExists = subjectStudent != null;
                     }
                     else {
                         subject.Students = new List<Student>();
                     }
 
-                    subject.Students.Add(subjectStudent);
+                    if (studentExists) {
+                        subject?.Students.Remove(student);
+                    } else {
+                        subject?.Students.Add(student);
+                    }
 
                 }
             }

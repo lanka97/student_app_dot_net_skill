@@ -56,6 +56,30 @@ namespace student_app.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStudent(int id, Student student)
         {
+
+            if (!StudentExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                var existingStudent = await _context.Students.FindAsync(id);
+                existingStudent.StudentName = (student.StudentName == existingStudent.StudentName) ? existingStudent.StudentName : student.StudentName;
+                existingStudent.StudentEmail = (student.StudentEmail == existingStudent.StudentEmail) ? existingStudent.StudentEmail : student.StudentEmail;
+            }
+
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return Ok();
+
             if (id != student.StudentId)
             {
                 return BadRequest();
