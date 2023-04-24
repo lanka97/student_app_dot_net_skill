@@ -6,7 +6,8 @@ namespace student_app.Repository
     {
         IEnumerable<Subject> GetAllSubject(bool trackChanges);
         Subject GetSubject(int subId, bool trackChanges);
-        void UpdateSubject(Subject student);
+        void UpdateSubject(Subject student); 
+        void DeleteSubject(Subject student);
         void CreateSubject(Subject student);
     }
 }

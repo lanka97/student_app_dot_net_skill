@@ -7,6 +7,7 @@ namespace student_app.Repository.RepositoryManager
         private APPDBContext _applicationContext;
         private ISubjectRepository _subjectRepository;
         private IStudentRepository? _studentRepository;
+        private IEnrollRepository? _enrollRepository;
 
         public RepositoryManager(APPDBContext applicationContext)
         {
@@ -30,6 +31,16 @@ namespace student_app.Repository.RepositoryManager
                 if (_subjectRepository == null)
                     _subjectRepository = new SubjectRepository(_applicationContext);
                 return _subjectRepository;
+            }
+        }
+
+        public IEnrollRepository Enroll
+        {
+            get
+            {
+                if (_enrollRepository == null)
+                    _enrollRepository = new EnrollRepository(_applicationContext);
+                return _enrollRepository;
             }
         }
 

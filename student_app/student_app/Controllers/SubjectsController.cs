@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using student_app.Models;
+using student_app.Models.ReqPayload;
 using student_app.Repository.RepositoryManager;
 
 namespace student_app.Controllers
@@ -32,13 +33,17 @@ namespace student_app.Controllers
         // POST: api/Subjects
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Subject>> PostSubject(Subject subject)
+        public async Task<ActionResult<Subject>> PostSubject(EnrollSubjectReq subjectReq)
         {
           if (_repository.Subject == null)
           {
               return Problem("Entity set 'APPDBContext.Subjects'  is null.");
           }
             try {
+                Subject subject = new Subject();
+                subject.SubjectName = subjectReq.SubjectName;
+                subject.Credits = subjectReq.Credits;
+
                 _repository.Subject.CreateSubject(subject);
                 await _repository.Save();
                 return CreatedAtAction(nameof(PostSubject), new { id = subject.SubjectId }, subject);
@@ -66,41 +71,65 @@ namespace student_app.Controllers
             return subject;
         }
 
-        // PUT: api/Subjects/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutSubject(int id, Subject subject)
-        //{
-        //    if (id != subject.SubjectId)
-        //    {
-        //        return BadRequest();
-        //    }
+        // DELETE: api/Subject/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSubject(int id)
+        {
+            if (_repository.Subject == null)
+            {
+                return NotFound();
+            }
+            var subject = _repository.Subject.GetSubject(id, true);
+            if (subject == null)
+            {
+                return NotFound();
+            }
 
-        //    _context.Entry(subject).State = EntityState.Modified;
+            _repository.Subject.DeleteSubject(subject);
+            try {
+                await _repository.Save();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+            return NoContent();
+        }
 
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!SubjectExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+        // PUT: api/Subject/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutStudent(int id, EnrollSubjectReq subject)
+        {
+            var subjectObj = _repository.Subject.GetSubject(id, true);
 
-        //    return NoContent();
-        //}
+            if (subjectObj == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                subjectObj.SubjectName = subject.SubjectName;
+                subjectObj.Credits = subject.Credits;
+
+                _repository.Subject.UpdateSubject(subjectObj);
+            }
+
+            try
+            {
+                await _repository.Save();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return NoContent();
+        }
 
         // PUT: api/Subjects/EnrollStudent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("EnrollStudent")]
-        public async Task<IActionResult> EnrollStudent(EnrollStudent entollPayload)
+        public async Task<IActionResult> EnrollStudent(EnrollStudentReq entollPayload)
         {
             // check Subject Exist
             if (entollPayload?.SubjectId != null && entollPayload?.StudentId != null)
@@ -115,6 +144,8 @@ namespace student_app.Controllers
                 else
                 {
                     var isStudentExists = false;
+                    EnrollStudent enrollStd = new EnrollStudent();
+
                     if (subject.Students?.Count > 0)
                     {
                         var subjectStudent = subject?.Students.Where(std => std.StudentId == entollPayload.StudentId).FirstOrDefault();
@@ -122,17 +153,20 @@ namespace student_app.Controllers
                             isStudentExists = true;
                         }
                     }
-                    else
-                    {
-                        subject.Students = new List<Student>();
-                    }
 
                     if (!isStudentExists)
                     {
-                        _repository.Subject.GetSubject(entollPayload.SubjectId, false)?.Students?.Add(student);
+                        enrollStd.SubjectId = entollPayload.SubjectId;
+                        enrollStd.StudentId = entollPayload.StudentId;
+                        _repository.Enroll.EnrollStudent(enrollStd);
                     }
-                    else {
-                        subject?.Students.Remove(student);
+                    else if(entollPayload.AllowUnEnroll) {
+                        enrollStd = _repository.Enroll.GetEnrollStudent(entollPayload.StudentId, entollPayload.SubjectId, false);
+                        if (enrollStd != null)
+                        {
+                            _repository.Enroll.UnEnrollStudent(enrollStd);
+
+                        }
                     }
                 }
             }
@@ -147,32 +181,5 @@ namespace student_app.Controllers
                 return BadRequest();
             }
         }
-
-
-
-        // DELETE: api/Subjects/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteSubject(int id)
-        //{
-        //    if (_context.Subjects == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var subject = await _context.Subjects.FindAsync(id);
-        //    if (subject == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Subjects.Remove(subject);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
-
-        //private bool subjectexists(int id)
-        //{
-        //    return (_context.subjects?.any(e => e.subjectid == id)).getvalueordefault();
-        //}
     }
 }

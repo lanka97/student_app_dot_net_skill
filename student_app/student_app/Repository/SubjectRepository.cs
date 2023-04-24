@@ -13,6 +13,7 @@ namespace student_app.Repository
 
         public void CreateSubject(Subject subject) => Create(subject);
         public void UpdateSubject(Subject subject) => Update(subject);
+        public void DeleteSubject(Subject subject) => Delete(subject);
 
         public IEnumerable<Subject> GetAllSubject(bool trackChanges) =>
             FindAll(trackChanges)

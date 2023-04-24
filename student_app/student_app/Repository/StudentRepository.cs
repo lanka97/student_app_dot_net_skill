@@ -22,5 +22,15 @@ namespace student_app.Repository
             .Where(std => std.StudentId == stdId)
             .Include(std => std.Subjects)
             .FirstOrDefault();
+
+        public void DeleteStudent(Student student)
+        {
+            Delete(student);
+        }
+
+        public void UpdateSubject(Student student)
+        {
+            Update(student);
+        }
     }
 }
