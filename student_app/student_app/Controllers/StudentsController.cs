@@ -1,8 +1,10 @@
 ﻿
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using student_app.Models;
 using student_app.Models.ReqPayload;
+using student_app.Models.ViewModel;
 using student_app.Repository.RepositoryManager;
 
 namespace student_app.Controllers
@@ -12,10 +14,12 @@ namespace student_app.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly IRepositoryManager _repository;
+        private readonly IMapper _mapper;
 
-        public StudentsController( IRepositoryManager repository)
+        public StudentsController( IRepositoryManager repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         // GET: api/Students
@@ -23,12 +27,13 @@ namespace student_app.Controllers
         public IActionResult GetStudents()
         {
             var students = _repository.Student.GetAllStudents(trackChanges: false);
-            return Ok(students);
+            var studentsView = _mapper.Map<List<ShortStudentDto>>(students);
+            return Ok(studentsView);
         }
 
         // GET: api/Students/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Student>> GetStudent(int id)
+        public async Task<ActionResult<StudentDto>> GetStudent(int id)
         {
           if (_repository.Student == null)
           {
@@ -41,7 +46,11 @@ namespace student_app.Controllers
                 return NotFound();
             }
 
-            return student;
+            var studentView = _mapper.Map<StudentDto>(student); 
+
+            Console.WriteLine(student);
+
+            return studentView;
         }
 
         // POST: api/Students

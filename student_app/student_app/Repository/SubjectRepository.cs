@@ -7,7 +7,7 @@ namespace student_app.Repository
 {
     public class SubjectRepository : RepositoryBase<Subject>, ISubjectRepository
     {
-        public SubjectRepository(APPDBContext _ApplicationContext) : base(_ApplicationContext)
+        public SubjectRepository(APPDBContext ApplicationContext) : base(ApplicationContext)
         {
         }
 
@@ -22,11 +22,17 @@ namespace student_app.Repository
 
         public Subject GetSubject(int subId, bool trackChanges)
         {
-            var subject = FindAll(trackChanges)
-            .Where(sub => sub.SubjectId == subId)
+            return ApplicationContext.Set<Subject>().AsNoTracking()
+            .Where(std => std.SubjectId == subId)
             .Include(std => std.EnrollStudents)
+            .ThenInclude(sv => sv.Students)
             .FirstOrDefault();
-            return subject ?? new Subject();
+
+            //var subject = FindAll(trackChanges)
+            //.Where(sub => sub.SubjectId == subId)
+            //.Include(std => std.EnrollStudents)
+            //.FirstOrDefault();
+            //return subject ?? new Subject();
         }
     }
 }

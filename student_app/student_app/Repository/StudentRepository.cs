@@ -18,9 +18,10 @@ namespace student_app.Repository
         public void CreateStudent(Student student) => Create(student);
 
         public Student GetStudent(int stdId, bool trackChanges) =>
-            FindAll(trackChanges)
+            ApplicationContext.Set<Student>().AsNoTracking()
             .Where(std => std.StudentId == stdId)
             .Include(std => std.EnrollStudents)
+            .ThenInclude(sv => sv.Subjects)
             .FirstOrDefault();
 
         public void DeleteStudent(Student student)

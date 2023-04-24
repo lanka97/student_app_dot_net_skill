@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using student_app.Models;
 using student_app.Models.ReqPayload;
+using student_app.Models.ViewModel;
 using student_app.Repository.RepositoryManager;
 
 namespace student_app.Controllers
@@ -16,18 +18,21 @@ namespace student_app.Controllers
     public class SubjectsController : ControllerBase
     {
         private readonly IRepositoryManager _repository;
+        private readonly IMapper _mapper;
 
-        public SubjectsController(IRepositoryManager repository)
+        public SubjectsController(IRepositoryManager repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         // GET: api/Subjects
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Subject>>> GetSubjects()
+        public async Task<ActionResult<List<ShortSubjectDto>>> GetSubjects()
         {
             var subject = _repository.Subject.GetAllSubject(trackChanges: false);
-            return Ok(subject);
+            var subjectModalView = _mapper.Map<List<ShortSubjectDto>>(subject);
+            return Ok(subjectModalView);
         }
 
         // POST: api/Subjects
@@ -55,7 +60,7 @@ namespace student_app.Controllers
 
         //GET: api/Subjects/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Subject>> GetSubject(int id)
+        public async Task<ActionResult<SubjectDto>> GetSubject(int id)
         {
             if (_repository.Subject == null)
             {
@@ -68,7 +73,8 @@ namespace student_app.Controllers
                 return NotFound();
             }
 
-            return subject;
+            var subjectViewModel = _mapper.Map<SubjectDto>(subject);
+            return subjectViewModel;
         }
 
         // DELETE: api/Subject/5
