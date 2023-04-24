@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace student_app.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class init2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +18,7 @@ namespace student_app.Migrations
                     StudentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StudentName = table.Column<string>(type: "nvarchar(250)", nullable: false),
-                    StudentEmail = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    StudentEmail = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -39,40 +40,41 @@ namespace student_app.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StudentSubject",
+                name: "EnrollStudents",
                 columns: table => new
                 {
-                    StudentsStudentId = table.Column<int>(type: "int", nullable: false),
-                    SubjectsSubjectId = table.Column<int>(type: "int", nullable: false)
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
+                    EnrolledOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StudentSubject", x => new { x.StudentsStudentId, x.SubjectsSubjectId });
+                    table.PrimaryKey("PK_EnrollStudents", x => new { x.StudentId, x.SubjectId });
                     table.ForeignKey(
-                        name: "FK_StudentSubject_Students_StudentsStudentId",
-                        column: x => x.StudentsStudentId,
+                        name: "FK_EnrollStudents_Students_StudentId",
+                        column: x => x.StudentId,
                         principalTable: "Students",
                         principalColumn: "StudentId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StudentSubject_Subjects_SubjectsSubjectId",
-                        column: x => x.SubjectsSubjectId,
+                        name: "FK_EnrollStudents_Subjects_SubjectId",
+                        column: x => x.SubjectId,
                         principalTable: "Subjects",
                         principalColumn: "SubjectId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentSubject_SubjectsSubjectId",
-                table: "StudentSubject",
-                column: "SubjectsSubjectId");
+                name: "IX_EnrollStudents_SubjectId",
+                table: "EnrollStudents",
+                column: "SubjectId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "StudentSubject");
+                name: "EnrollStudents");
 
             migrationBuilder.DropTable(
                 name: "Students");

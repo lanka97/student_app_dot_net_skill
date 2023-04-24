@@ -24,7 +24,7 @@ namespace student_app.Repository
         {
             var subject = FindAll(trackChanges)
             .Where(sub => sub.SubjectId == subId)
-            .Include(std => std.Students)
+            .Include(std => std.EnrollStudents)
             .FirstOrDefault();
             return subject ?? new Subject();
         }

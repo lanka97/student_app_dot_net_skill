@@ -13,6 +13,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 }); ;
 
 
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -12,6 +12,7 @@ namespace student_app.Models
         [Column(TypeName = "nvarchar(250)")]
         public string SubjectName { get; set; } = "";
         public int Credits { get; set; } = 0;
-        public virtual ICollection<Student>? Students { get; set; }
+
+        public virtual ICollection<EnrollStudent>? EnrollStudents { get; set; }
     }
 }

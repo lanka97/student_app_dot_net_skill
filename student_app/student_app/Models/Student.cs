@@ -14,6 +14,6 @@ namespace student_app.Models
 
         [Required]
         public string? StudentEmail { get; set; }
-        public virtual ICollection<Subject>? Subjects { get; set; }
+        public virtual ICollection<EnrollStudent>? EnrollStudents { get; set; }
     }
 }

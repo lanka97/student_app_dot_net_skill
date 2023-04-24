@@ -85,17 +85,31 @@ namespace student_app.Migrations
 
             modelBuilder.Entity("student_app.Models.EnrollStudent", b =>
                 {
-                    b.HasOne("student_app.Models.Student", null)
-                        .WithMany()
+                    b.HasOne("student_app.Models.Student", "Students")
+                        .WithMany("EnrollStudents")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("student_app.Models.Subject", null)
-                        .WithMany()
+                    b.HasOne("student_app.Models.Subject", "Subjects")
+                        .WithMany("EnrollStudents")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Students");
+
+                    b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("student_app.Models.Student", b =>
+                {
+                    b.Navigation("EnrollStudents");
+                });
+
+            modelBuilder.Entity("student_app.Models.Subject", b =>
+                {
+                    b.Navigation("EnrollStudents");
                 });
 #pragma warning restore 612, 618
         }

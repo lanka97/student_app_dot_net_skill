@@ -20,7 +20,7 @@ namespace student_app.Repository
         public Student GetStudent(int stdId, bool trackChanges) =>
             FindAll(trackChanges)
             .Where(std => std.StudentId == stdId)
-            .Include(std => std.Subjects)
+            .Include(std => std.EnrollStudents)
             .FirstOrDefault();
 
         public void DeleteStudent(Student student)

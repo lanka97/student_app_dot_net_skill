@@ -146,9 +146,9 @@ namespace student_app.Controllers
                     var isStudentExists = false;
                     EnrollStudent enrollStd = new EnrollStudent();
 
-                    if (subject.Students?.Count > 0)
+                    if (subject.EnrollStudents?.Count > 0)
                     {
-                        var subjectStudent = subject?.Students.Where(std => std.StudentId == entollPayload.StudentId).FirstOrDefault();
+                        var subjectStudent = subject?.EnrollStudents.Where(std => std.StudentId == entollPayload.StudentId).FirstOrDefault();
                         if (subjectStudent != null) {
                             isStudentExists = true;
                         }

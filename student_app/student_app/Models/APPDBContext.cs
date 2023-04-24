@@ -11,10 +11,15 @@ namespace student_app.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Student>()
-                .HasMany(e => e.Subjects)
-                .WithMany(e => e.Students)
-                .UsingEntity<EnrollStudent>(
+            //modelBuilder.Entity<Student>()
+            //    .HasMany(e => e.Subjects)
+            //    .WithMany(e => e.Students)
+            //    .UsingEntity<EnrollStudent>(
+            //        j => j.Property(e => e.EnrolledOn).HasDefaultValueSql("CURRENT_TIMESTAMP"));
+            modelBuilder.Entity<EnrollStudent>()
+                    .HasKey(e => new { e.StudentId, e.SubjectId });
+
+            modelBuilder.Entity<EnrollStudent>(
                     j => j.Property(e => e.EnrolledOn).HasDefaultValueSql("CURRENT_TIMESTAMP"));
         }
 
