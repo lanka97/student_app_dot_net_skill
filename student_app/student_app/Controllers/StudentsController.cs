@@ -35,15 +35,16 @@ namespace student_app.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StudentDto>> GetStudent(int id)
         {
-          if (_repository.Student == null)
-          {
-              return NotFound();
-          }
+
+            var response = new ResponseDto();
+            
             var student = _repository.Student.GetStudent(id, true);
 
             if (student == null)
             {
-                return NotFound();
+                response.Message = "Invalid StudentId";
+                response.Status = 404;
+                return NotFound(response);
             }
 
             var studentView = _mapper.Map<StudentDto>(student); 
@@ -56,9 +57,12 @@ namespace student_app.Controllers
         [HttpPost]
         public async Task<ActionResult<Student>> PostStudent(PostStudentReq studentReq)
         {
+            var response = new ResponseDto();
             if (_repository.Student == null)
             {
-                return Problem("Entity set 'APPDBContext.Students'  is null.");
+                response.Message = "Entity set 'APPDBContext.Students'  is null.";
+                response.Status = 500;
+                return BadRequest(response);
             }
 
             Student student = new Student();
@@ -75,38 +79,45 @@ namespace student_app.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStudent(int id)
         {
-            if (_repository.Student == null)
-            {
-                return NotFound();
-            }
+            var response = new ResponseDto();
+            
             var student = _repository.Student.GetStudent(id,true);
             if (student == null)
             {
-                return NotFound();
+                response.Message = "Invalid StudentId";
+                response.Status = 404;
+                return NotFound(response);
             }
 
             _repository.Student.DeleteStudent(student);
             try
             {
-                await _repository.Save();
+                await _repository.Save(); 
+                response.Message = "Student Deleted Succesfully";
+                response.Status = 200;
+                return NotFound(response);
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw;
+                response.Message = "Somthing went wrong.";
+                response.Status = 500;
+                return BadRequest(response);
             }
 
-            return NoContent();
         }
 
         // PUT: api/Students/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutStudent(int id, PostStudentReq student)
         {
+            var response = new ResponseDto();
             var studentObj = _repository.Student.GetStudent(id,true);
 
             if (studentObj == null)
             {
-                return NotFound();
+                response.Message = "Invalid StudentId";
+                response.Status = 404;
+                return NotFound(response);
             }
             else
             {
@@ -119,13 +130,16 @@ namespace student_app.Controllers
             try
             {
                 await _repository.Save();
+                response.Message = "Student Update Successfully";
+                response.Status = 200;
+                return Accepted(response);
             }
             catch (DbUpdateConcurrencyException)
             {
-                    throw;
+                response.Message = "Somthing went wrong.";
+                response.Status = 500;
+                return BadRequest(response);
             }
-
-            return NoContent();
         }
 
         //private bool StudentExists(int id)
