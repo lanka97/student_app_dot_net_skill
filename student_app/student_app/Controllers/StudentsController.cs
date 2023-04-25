@@ -48,7 +48,6 @@ namespace student_app.Controllers
 
             var studentView = _mapper.Map<StudentDto>(student); 
 
-            Console.WriteLine(student);
 
             return studentView;
         }

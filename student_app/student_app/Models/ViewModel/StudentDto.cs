@@ -8,6 +8,6 @@ namespace student_app.Models.ViewModel
         public int StudentId { get; set; }
         public string StudentName { get; set; } = "";
         public string? StudentEmail { get; set; }
-        public virtual ICollection<EnrollStudentWithoutStdDto>? EnrollStudents { get; set; }
+        public virtual ICollection<EnrollStudentWithoutStdDto>? EnrollSubjects { get; set; }
     }
 }

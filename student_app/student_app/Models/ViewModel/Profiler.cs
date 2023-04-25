@@ -7,9 +7,9 @@ namespace student_app.Models.ViewModel
         public StudentProfile()
         {
             CreateMap<Student, StudentDto>()
-                .ForMember(dest => dest.EnrollStudents, opt => opt.MapFrom(src => src.EnrollStudents))
+                .ForMember(dest => dest.EnrollSubjects, opt => opt.MapFrom(src => src.EnrollStudents))
                 .ReverseMap()
-                .ForMember(dest => dest.EnrollStudents, opt => opt.MapFrom(src => src.EnrollStudents));
+                .ForMember(dest => dest.EnrollStudents, opt => opt.MapFrom(src => src.EnrollSubjects));
 
             //CreateMap<EnrollStudent, EnrollStudentWithoutStdDto>()
             //    .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.StudentId))
