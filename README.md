@@ -1,1 +1,1 @@
-# student_app_dot_net_skill
+# Demo project to .net api skill dev
